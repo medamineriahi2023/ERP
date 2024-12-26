@@ -1,0 +1,102 @@
+<app-conge-nav></app-conge-nav>
+
+<div class="grid">
+  <div class="col-12 md:col-4">
+    <div class="grid">
+      <div class="col-12">
+        <p-card>
+          <div class="flex flex-column gap-2">
+            <h3>Absences à venir</h3>
+            <div class="text-3xl font-bold">
+              {{ teamStats.upcomingAbsences }}
+            </div>
+          </div>
+        </p-card>
+      </div>
+      <div class="col-12">
+        <p-card>
+          <div class="flex flex-column gap-2">
+            <h3>Chevauchements</h3>
+            <div class="text-3xl font-bold">
+              {{ teamStats.overlappingAbsences }}
+            </div>
+          </div>
+        </p-card>
+      </div>
+    </div>
+
+    <div class="mt-4">
+      <p-card header="Équipe" styleClass="h-full">
+        <div class="flex flex-column gap-4">
+          <div *ngFor="let member of teamMembers" 
+               class="flex align-items-center gap-3 p-2 border-round-lg hover:surface-100">
+            <div class="flex-shrink-0">
+              <p-avatar [image]="member.avatar"
+                       size="large"
+                       shape="circle"
+                       [pTooltip]="member.role">
+              </p-avatar>
+            </div>
+            <div class="flex-grow-1">
+              <div class="font-medium">{{ member.name }}</div>
+              <div class="text-sm text-500">{{ member.role }}</div>
+            </div>
+            <div class="flex-shrink-0">
+              <span [class]="getMemberAvailability(member.id) === 'Disponible' ? 'text-green-500' : 'text-orange-500'">
+                {{ getMemberAvailability(member.id) }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </p-card>
+    </div>
+  </div>
+
+  <div class="col-12 md:col-8">
+    <div class="card">
+      <p-card styleClass="calendar-card">
+        <full-calendar [options]="calendarOptions"></full-calendar>
+      </p-card>
+    </div>
+  </div>
+</div>
+
+<p-dialog [(visible)]="showEventDialog"
+          [modal]="true"
+          [style]="{width: '450px'}"
+          [header]="selectedEvent?.title || ''"
+          styleClass="p-fluid">
+  <div class="flex flex-column gap-4" *ngIf="selectedEvent">
+    <div class="flex align-items-center gap-3">
+      <p-avatar [image]="selectedEvent.extendedProps.member.avatar"
+                size="large"
+                shape="circle">
+      </p-avatar>
+      <div>
+        <div class="font-medium">{{ selectedEvent.extendedProps.member.name }}</div>
+        <div class="text-sm text-500">{{ selectedEvent.extendedProps.member.role }}</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="col-6">
+        <label class="block font-medium mb-2">Date de début</label>
+        <div>{{ formatDate(selectedEvent.start) }}</div>
+      </div>
+      <div class="col-6">
+        <label class="block font-medium mb-2">Date de fin</label>
+        <div>{{ formatDate(selectedEvent.end) }}</div>
+      </div>
+    </div>
+
+    <div>
+      <label class="block font-medium mb-2">Type de congé</label>
+      <div>{{ selectedEvent.extendedProps.type }}</div>
+    </div>
+
+    <div>
+      <label class="block font-medium mb-2">Statut</label>
+      <div>{{ selectedEvent.extendedProps.status }}</div>
+    </div>
+  </div>
+</p-dialog>

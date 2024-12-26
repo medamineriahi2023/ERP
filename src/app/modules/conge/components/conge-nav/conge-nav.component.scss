@@ -1,0 +1,49 @@
+.conge-nav {
+  background: white;
+  padding: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 2rem;
+}
+
+:host ::ng-deep {
+  .p-tabmenu {
+    .p-tabmenu-nav {
+      border: none;
+      background: transparent;
+
+      .p-tabmenuitem {
+        margin-right: 0.5rem;
+
+        .p-menuitem-link {
+          background: transparent;
+          border: none;
+          border-radius: 0.5rem;
+          padding: 1rem 1.5rem;
+          font-weight: 500;
+          color: #64748b;
+          transition: all 0.2s;
+
+          &:not(.p-disabled):hover {
+            background: #f1f5f9;
+            color: #1e293b;
+          }
+
+          &.p-highlight {
+            background: #3b82f6;
+            color: white;
+
+            .p-menuitem-icon,
+            .p-menuitem-text {
+              color: white;
+            }
+          }
+
+          .p-menuitem-icon {
+            color: #64748b;
+            margin-right: 0.5rem;
+          }
+        }
+      }
+    }
+  }
+}

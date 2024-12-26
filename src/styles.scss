@@ -1,0 +1,47 @@
+/* You can add global styles to this file, and also import other style files */
+
+/* Tailwind */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global Styles */
+html, body {
+  @apply h-full bg-gray-50;
+}
+
+.page-container {
+  @apply p-6;
+}
+
+.section-title {
+  @apply text-2xl font-bold text-gray-800;
+}
+
+.card {
+  @apply bg-white rounded-lg shadow-sm p-6;
+}
+
+/* Custom styles that combine Tailwind with PrimeNG */
+@layer components {
+  .btn-primary {
+    @apply bg-primary-500 text-white px-4 py-2 rounded-md hover:bg-primary-600 transition-colors;
+  }
+  
+  .input-field {
+    @apply border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+  }
+}
+
+/* Override PrimeNG styles to match our theme */
+:root {
+  --primary-color: #0ea5e9;
+  --primary-color-text: #ffffff;
+  --surface-ground: #f3f4f6;
+  --surface-section: #ffffff;
+  --surface-card: #ffffff;
+  --surface-overlay: #ffffff;
+  --surface-border: #e5e7eb;
+  --text-color: #1f2937;
+  --text-color-secondary: #6b7280;
+}

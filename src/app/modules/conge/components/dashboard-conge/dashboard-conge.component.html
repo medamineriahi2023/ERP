@@ -1,0 +1,226 @@
+<app-conge-nav></app-conge-nav>
+
+<div class="container mx-auto px-4 py-8">
+  <p-toast></p-toast>
+
+  <!-- En-tête -->
+  <div class="mb-8">
+    <div class="flex justify-between items-center">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">Gestion des Congés</h1>
+        <p class="text-gray-600">Gérez vos demandes de congés et suivez leur statut</p>
+      </div>
+      <button 
+        pButton 
+        label="Nouvelle demande" 
+        icon="pi pi-plus"
+        class="p-button-success"
+        (click)="openRequestDialog()">
+      </button>
+    </div>
+  </div>
+
+  <!-- Cartes de statistiques -->
+  @if (congeBalance) {
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <!-- Jours restants -->
+      <p-card styleClass="h-full">
+        <div class="text-center">
+          <div class="text-4xl font-bold text-green-600 mb-2">
+            {{ congeBalance.remainingDays }}
+          </div>
+          <div class="text-sm text-gray-600">Jours restants</div>
+          <p-progressBar 
+            [value]="(congeBalance.remainingDays / congeBalance.totalDays) * 100"
+            styleClass="mt-3">
+          </p-progressBar>
+        </div>
+      </p-card>
+
+      <!-- Jours utilisés -->
+      <p-card styleClass="h-full">
+        <div class="text-center">
+          <div class="text-4xl font-bold text-blue-600 mb-2">
+            {{ congeBalance.usedDays }}
+          </div>
+          <div class="text-sm text-gray-600">Jours utilisés</div>
+          <p-progressBar 
+            [value]="(congeBalance.usedDays / congeBalance.totalDays) * 100"
+            styleClass="mt-3">
+          </p-progressBar>
+        </div>
+      </p-card>
+
+      <!-- Jours maladie -->
+      <p-card styleClass="h-full">
+        <div class="text-center">
+          <div class="text-4xl font-bold text-orange-600 mb-2">
+            {{ congeBalance.sickDays }}
+          </div>
+          <div class="text-sm text-gray-600">Jours maladie</div>
+          <p-progressBar 
+            [value]="(congeBalance.sickDays / 10) * 100"
+            styleClass="mt-3">
+          </p-progressBar>
+        </div>
+      </p-card>
+
+      <!-- Demandes en attente -->
+      <p-card styleClass="h-full">
+        <div class="text-center">
+          <div class="text-4xl font-bold text-purple-600 mb-2">
+            {{ congeBalance.upcomingRequests }}
+          </div>
+          <div class="text-sm text-gray-600">Demandes en attente</div>
+        </div>
+      </p-card>
+    </div>
+  }
+
+  <!-- Liste des congés -->
+  <p-card styleClass="mb-8">
+    <div class="grid grid-cols-1 gap-4">
+      @for (conge of conges; track conge.id) {
+        <div class="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+          <div class="flex items-center gap-4">
+            <!-- Icône du type de congé -->
+            <div [class]="'w-12 h-12 rounded-full flex items-center justify-center ' + 
+              (conge.type === 'CONGE_PAYE' ? 'bg-green-100 text-green-600' :
+               conge.type === 'MALADIE' ? 'bg-red-100 text-red-600' :
+               conge.type === 'FORMATION' ? 'bg-blue-100 text-blue-600' :
+               'bg-gray-100 text-gray-600')">
+              <i [class]="'text-xl ' + 
+                (conge.type === 'CONGE_PAYE' ? 'pi pi-calendar' :
+                 conge.type === 'MALADIE' ? 'pi pi-heart' :
+                 conge.type === 'FORMATION' ? 'pi pi-book' :
+                 'pi pi-clock')">
+              </i>
+            </div>
+
+            <!-- Informations du congé -->
+            <div>
+              <div class="font-semibold text-gray-900">
+                {{ conge.type === 'CONGE_PAYE' ? 'Congé payé' :
+                   conge.type === 'MALADIE' ? 'Congé maladie' :
+                   conge.type === 'FORMATION' ? 'Formation' :
+                   conge.type === 'SANS_SOLDE' ? 'Congé sans solde' :
+                   'Autre' }}
+              </div>
+              <div class="text-sm text-gray-600">
+                Du {{ conge.startDate | date:'dd/MM/yyyy' }} au {{ conge.endDate | date:'dd/MM/yyyy' }}
+                ({{ conge.duration }} jours)
+              </div>
+              @if (conge.reason) {
+                <div class="text-sm text-gray-500 mt-1">
+                  {{ conge.reason }}
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="flex items-center gap-4">
+            <!-- Badge de statut -->
+            <p-chip [label]="getStatusLabel(conge.status)"
+                   [class]="getStatusClass(conge.status)">
+            </p-chip>
+
+            <!-- Badge d'urgence si urgent -->
+            @if (conge.urgencyLevel === 'URGENT') {
+              <p-chip label="Urgent"
+                     styleClass="bg-red-100 text-red-600 border-red-200">
+              </p-chip>
+            }
+
+            <!-- Actions -->
+            @if (conge.status === 'EN_ATTENTE') {
+              <button pButton
+                      icon="pi pi-times"
+                      class="p-button-rounded p-button-danger p-button-text"
+                      (click)="conge.id && cancelRequest(conge.id)"
+                      pTooltip="Annuler la demande">
+              </button>
+            }
+          </div>
+        </div>
+      }
+
+      @if (conges.length === 0) {
+        <div class="text-center py-8 text-gray-500">
+          Aucune demande de congé
+        </div>
+      }
+    </div>
+  </p-card>
+</div>
+
+<!-- Dialog de nouvelle demande -->
+<p-dialog [(visible)]="showRequestDialog"
+          [modal]="true"
+          [style]="{width: '500px'}"
+          header="Nouvelle demande de congé">
+  
+  <div class="p-fluid">
+    <!-- Type de congé -->
+    <div class="field mb-4">
+      <label class="block text-gray-700 mb-2">Type de congé</label>
+      <p-dropdown [options]="typeOptions"
+                 [(ngModel)]="newRequest.type"
+                 placeholder="Sélectionnez un type"
+                 [style]="{width: '100%'}">
+      </p-dropdown>
+    </div>
+
+    <!-- Dates -->
+    <div class="field mb-4">
+      <label class="block text-gray-700 mb-2">Période</label>
+      <p-calendar #calendar
+                 [(ngModel)]="dateRange"
+                 selectionMode="range"
+                 [readonlyInput]="true"
+                 [showIcon]="true"
+                 [minDate]="minDate"
+                 [disabledDates]="publicHolidays"
+                 [style]="{width: '100%'}"
+                 dateFormat="dd/mm/yy"
+                 placeholder="Sélectionnez les dates"
+                 (onSelect)="onDateSelect($event)"
+                 [appendTo]="'body'">
+      </p-calendar>
+    </div>
+
+    <!-- Niveau d'urgence -->
+    <div class="field mb-4">
+      <label class="block text-gray-700 mb-2">Niveau d'urgence</label>
+      <p-dropdown [options]="urgencyOptions"
+                 [(ngModel)]="newRequest.urgencyLevel"
+                 placeholder="Sélectionnez le niveau d'urgence"
+                 [style]="{width: '100%'}">
+      </p-dropdown>
+    </div>
+
+    <!-- Motif -->
+    <div class="field mb-4">
+      <label class="block text-gray-700 mb-2">Motif (optionnel)</label>
+      <textarea pInputTextarea
+                [(ngModel)]="newRequest.reason"
+                rows="3"
+                placeholder="Décrivez le motif de votre demande...">
+      </textarea>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button pButton
+            label="Annuler"
+            icon="pi pi-times"
+            class="p-button-text"
+            (click)="showRequestDialog = false">
+    </button>
+    <button pButton
+            label="Envoyer la demande"
+            icon="pi pi-check"
+            class="p-button-success"
+            (click)="submitRequest()">
+    </button>
+  </ng-template>
+</p-dialog>

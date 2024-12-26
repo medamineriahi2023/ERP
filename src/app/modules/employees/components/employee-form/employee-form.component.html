@@ -1,0 +1,145 @@
+<form [formGroup]="employeeForm" (ngSubmit)="onSubmit()" class="p-fluid">
+  <div class="grid">
+    <!-- Personal Information -->
+    <div class="col-12">
+      <h3 class="text-xl font-semibold mb-4">Informations Personnelles</h3>
+    </div>
+
+    <!-- Profile Picture -->
+    <div class="col-12 mb-4 flex justify-content-center">
+      <p-fileUpload 
+        mode="basic" 
+        chooseLabel="Choisir une photo" 
+        [auto]="true"
+        accept="image/*" 
+        [maxFileSize]="1000000"
+        (onSelect)="onFileUpload($event)"
+        styleClass="p-button-outlined">
+      </p-fileUpload>
+    </div>
+
+    <!-- Name Fields -->
+    <div class="col-12 md:col-6 mb-4">
+      <span class="p-float-label">
+        <input id="firstName" type="text" pInputText formControlName="firstName">
+        <label for="firstName">Prénom</label>
+      </span>
+      <small class="p-error" *ngIf="employeeForm.get('firstName')?.invalid && employeeForm.get('firstName')?.touched">
+        Le prénom est requis (minimum 2 caractères)
+      </small>
+    </div>
+
+    <div class="col-12 md:col-6 mb-4">
+      <span class="p-float-label">
+        <input id="lastName" type="text" pInputText formControlName="lastName">
+        <label for="lastName">Nom</label>
+      </span>
+      <small class="p-error" *ngIf="employeeForm.get('lastName')?.invalid && employeeForm.get('lastName')?.touched">
+        Le nom est requis (minimum 2 caractères)
+      </small>
+    </div>
+
+    <!-- Contact Information -->
+    <div class="col-12 md:col-6 mb-4">
+      <span class="p-float-label">
+        <input id="email" type="email" pInputText formControlName="email">
+        <label for="email">Email</label>
+      </span>
+      <small class="p-error" *ngIf="employeeForm.get('email')?.invalid && employeeForm.get('email')?.touched">
+        Email invalide
+      </small>
+    </div>
+
+    <div class="col-12 md:col-6 mb-4">
+      <span class="p-float-label">
+        <input id="phone" type="tel" pInputText formControlName="phone">
+        <label for="phone">Téléphone</label>
+      </span>
+      <small class="p-error" *ngIf="employeeForm.get('phone')?.invalid && employeeForm.get('phone')?.touched">
+        Numéro de téléphone invalide
+      </small>
+    </div>
+
+    <!-- Professional Information -->
+    <div class="col-12">
+      <h3 class="text-xl font-semibold mb-4">Informations Professionnelles</h3>
+    </div>
+
+    <div class="col-12 md:col-6 mb-4">
+      <span class="p-float-label">
+        <input id="position" type="text" pInputText formControlName="position">
+        <label for="position">Poste</label>
+      </span>
+    </div>
+
+    <div class="col-12 md:col-6 mb-4">
+      <span class="p-float-label">
+        <p-dropdown id="department" [options]="departments" formControlName="department" [showClear]="true"></p-dropdown>
+        <label for="department">Département</label>
+      </span>
+    </div>
+
+    <div class="col-12 md:col-6 mb-4">
+      <span class="p-float-label">
+        <p-calendar id="joinDate" formControlName="joinDate" [showIcon]="true"></p-calendar>
+        <label for="joinDate">Date d'entrée</label>
+      </span>
+    </div>
+
+    <div class="col-12 md:col-6 mb-4">
+      <span class="p-float-label">
+        <p-dropdown id="contractType" [options]="contractTypes" formControlName="contractType" [showClear]="true"></p-dropdown>
+        <label for="contractType">Type de Contrat</label>
+      </span>
+    </div>
+
+    <div class="col-12 md:col-6 mb-4">
+      <span class="p-float-label">
+        <p-dropdown id="status" [options]="statuses" formControlName="status"></p-dropdown>
+        <label for="status">Statut</label>
+      </span>
+    </div>
+
+    <!-- Skills -->
+    <div class="col-12 mb-4">
+      <span class="p-float-label">
+        <p-chips id="skills" formControlName="skills"></p-chips>
+        <label for="skills">Compétences</label>
+      </span>
+    </div>
+
+    <!-- Salary Information -->
+    <div class="col-12">
+      <h3 class="text-xl font-semibold mb-4">Informations Salariales</h3>
+    </div>
+
+    <div formGroupName="salary">
+      <div class="col-12 md:col-6 mb-4">
+        <span class="p-float-label">
+          <p-inputNumber id="base" formControlName="base" [showButtons]="false" mode="currency" currency="MAD"></p-inputNumber>
+          <label for="base">Salaire de Base</label>
+        </span>
+      </div>
+
+      <div class="col-12 md:col-6 mb-4">
+        <span class="p-float-label">
+          <p-inputNumber id="bonus" formControlName="bonus" [showButtons]="false" mode="currency" currency="MAD"></p-inputNumber>
+          <label for="bonus">Bonus</label>
+        </span>
+      </div>
+    </div>
+
+    <div class="col-12 md:col-6 mb-4">
+      <span class="p-float-label">
+        <p-inputNumber id="performanceRating" formControlName="performanceRating" [showButtons]="true" [min]="1" [max]="5" [step]="0.5"></p-inputNumber>
+        <label for="performanceRating">Note de Performance</label>
+      </span>
+    </div>
+  </div>
+
+  <!-- Form Actions -->
+  <div class="flex justify-content-end gap-2 mt-4">
+    <button pButton type="button" label="Annuler" class="p-button-outlined" (click)="onCancel()"></button>
+    <button pButton type="submit" label="Enregistrer" [disabled]="employeeForm.invalid"></button>
+  </div>
+</form>

@@ -1,0 +1,49 @@
+:host ::ng-deep {
+  .form-group {
+    @apply mb-4;
+  }
+
+  .p-dropdown {
+    @apply w-full;
+    
+    .p-dropdown-label {
+      @apply py-2 px-3;
+    }
+  }
+
+  .p-calendar {
+    @apply w-full;
+    
+    .p-inputtext {
+      @apply py-2 px-3 w-full;
+    }
+  }
+
+  .p-fileupload-choose {
+    @apply py-2 px-4;
+    
+    &:not(.p-disabled) {
+      &:hover {
+        @apply bg-gray-100;
+      }
+    }
+  }
+
+  .p-inputtextarea {
+    @apply w-full resize-none;
+  }
+
+  .p-button {
+    &.p-button-secondary {
+      @apply bg-gray-500 border-gray-500;
+      
+      &:enabled:hover {
+        @apply bg-gray-600 border-gray-600;
+      }
+    }
+  }
+
+  .card {
+    @apply bg-white rounded-lg shadow-sm p-6;
+  }
+}

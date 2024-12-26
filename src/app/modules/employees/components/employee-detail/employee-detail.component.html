@@ -1,0 +1,139 @@
+<div class="p-6" *ngIf="employee">
+  <!-- Header Section -->
+  <div class="bg-white rounded-lg shadow mb-6">
+    <div class="relative h-48 bg-gradient-to-r from-blue-500 to-blue-700 rounded-t-lg">
+      <div class="absolute -bottom-16 left-8">
+        <p-avatar [image]="employee.avatar" size="xlarge" shape="circle" 
+          class="border-4 border-white shadow-lg" [style]="{'width': '8rem', 'height': '8rem'}">
+        </p-avatar>
+      </div>
+    </div>
+    <div class="p-6 pt-20">
+      <div class="flex justify-content-between align-items-start">
+        <div>
+          <h1 class="text-3xl font-bold mb-2">{{ employee.firstName }} {{ employee.lastName }}</h1>
+          <p class="text-xl text-gray-600 mb-4">{{ employee.position }}</p>
+          <div class="flex gap-3">
+            <p-tag [severity]="getStatusSeverity(employee.status)" [value]="getStatusLabel(employee.status)"></p-tag>
+            <p-chip [label]="employee.department"></p-chip>
+            <p-chip [label]="employee.contractType"></p-chip>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <button pButton icon="pi pi-pencil" label="Modifier" (click)="onEdit()" 
+            class="p-button-outlined"></button>
+          <button pButton icon="pi pi-trash" label="Supprimer" (click)="onDelete()" 
+            class="p-button-outlined p-button-danger"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <p-tabView [(activeIndex)]="activeTabIndex">
+    <!-- Information Tab -->
+    <p-tabPanel header="Informations">
+      <div class="grid">
+        <!-- Contact Information -->
+        <div class="col-12 md:col-4">
+          <p-card header="Contact">
+            <div class="flex flex-column gap-4">
+              <div>
+                <label class="block text-gray-600 mb-1">Email</label>
+                <p class="text-lg">{{ employee.email }}</p>
+              </div>
+              <div>
+                <label class="block text-gray-600 mb-1">Téléphone</label>
+                <p class="text-lg">{{ employee.phone }}</p>
+              </div>
+            </div>
+          </p-card>
+        </div>
+
+        <!-- Professional Information -->
+        <div class="col-12 md:col-4">
+          <p-card header="Professionnel">
+            <div class="flex flex-column gap-4">
+              <div>
+                <label class="block text-gray-600 mb-1">Date d'entrée</label>
+                <p class="text-lg">{{ employee.joinDate | date:'longDate' }}</p>
+              </div>
+              <div>
+                <label class="block text-gray-600 mb-1">Performance</label>
+                <div class="flex align-items-center gap-2">
+                  <div class="w-24 bg-gray-200 rounded-full h-2">
+                    <div class="bg-blue-600 h-2 rounded-full" 
+                      [style.width]="(employee.performanceRating || 0) * 20 + '%'">
+                    </div>
+                  </div>
+                  <span class="text-lg">{{ employee.performanceRating }}/5</span>
+                </div>
+              </div>
+            </div>
+          </p-card>
+        </div>
+
+        <!-- Salary Information -->
+        <div class="col-12 md:col-4">
+          <p-card header="Rémunération">
+            <div class="flex flex-column gap-4">
+              <div>
+                <label class="block text-gray-600 mb-1">Salaire de base</label>
+                <p class="text-lg">{{ employee.salary.base | currency:'MAD':'symbol':'1.0-0' }}</p>
+              </div>
+              <div *ngIf="employee.salary.bonus">
+                <label class="block text-gray-600 mb-1">Bonus</label>
+                <p class="text-lg">{{ employee.salary.bonus | currency:'MAD':'symbol':'1.0-0' }}</p>
+              </div>
+              <div>
+                <label class="block text-gray-600 mb-1">Dernière révision</label>
+                <p class="text-lg">{{ employee.salary.lastReview | date:'mediumDate' }}</p>
+              </div>
+            </div>
+          </p-card>
+        </div>
+
+        <!-- Skills -->
+        <div class="col-12">
+          <p-card header="Compétences">
+            <div class="flex flex-wrap gap-2">
+              <p-chip *ngFor="let skill of employee.skills" [label]="skill"></p-chip>
+            </div>
+          </p-card>
+        </div>
+      </div>
+    </p-tabPanel>
+
+    <!-- Timeline Tab -->
+    <p-tabPanel header="Historique">
+      <p-timeline [value]="events" align="alternate">
+        <ng-template pTemplate="content" let-event>
+          <div class="flex flex-column align-items-center">
+            <span class="text-lg font-bold mb-1">{{ event.status }}</span>
+            <small class="text-gray-600">{{ event.date | date:'mediumDate' }}</small>
+            <p class="mt-2">{{ event.description }}</p>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="opposite" let-event>
+          <i [class]="event.icon" [style.color]="event.color" style="font-size: 2rem"></i>
+        </ng-template>
+      </p-timeline>
+    </p-tabPanel>
+  </p-tabView>
+</div>
+
+<!-- Edit Dialog -->
+<p-dialog 
+  [(visible)]="showEditDialog" 
+  [modal]="true" 
+  [style]="{width: '90vw', maxWidth: '900px'}" 
+  header="Modifier l'employé">
+  <app-employee-form 
+    [employee]="employee" 
+    (save)="onSave($event)" 
+    (cancel)="showEditDialog = false">
+  </app-employee-form>
+</p-dialog>
+
+<p-confirmDialog></p-confirmDialog>
+<p-toast></p-toast>

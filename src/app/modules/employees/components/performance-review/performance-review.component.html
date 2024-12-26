@@ -1,0 +1,41 @@
+<div class="grid">
+  <div class="col-12">
+    <p-card>
+      <form [formGroup]="reviewForm" (ngSubmit)="onSubmit()" class="p-fluid">
+        <!-- Metrics -->
+        <div formArrayName="metrics">
+          <div *ngFor="let control of reviewForm.get('metrics')?.value; let i = index"
+            [formGroupName]="i" class="mb-4">
+            <div class="flex align-items-center justify-content-between">
+              <label [for]="'metric-' + i" class="font-medium">
+                {{ control.category }}
+                <span class="text-sm text-gray-600">
+                  (Poids: {{ (control.weight * 100) }}%)
+                </span>
+              </label>
+              <p-rating formControlName="score" [stars]="5"></p-rating>
+            </div>
+            <div class="mt-2">
+              <textarea pInputTextarea formControlName="comments"
+                [rows]="3" placeholder="Commentaires..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Overall Score -->
+        <div class="text-center my-4">
+          <div class="text-4xl font-bold" [ngClass]="getScoreColor(calculateOverallScore())">
+            {{ calculateOverallScore() | number:'1.1-1' }}/5
+          </div>
+          <div class="text-gray-600">Score Global</div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="flex justify-content-end">
+          <button pButton type="submit" label="Enregistrer" 
+            [disabled]="!reviewForm.valid"></button>
+        </div>
+      </form>
+    </p-card>
+  </div>
+</div>
